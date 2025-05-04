@@ -1,0 +1,67 @@
+name: Deploy Application
+
+on:
+  push:
+    branches: [ develop ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          
+      - name: Add host key to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+          
+      - name: Deploy to production server
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+        run: |
+          # Connect to server and deploy
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOL'
+            # Remove old repository if exists
+            if [ -d "~/Finals" ]; then
+              rm -rf ~/Finals
+            fi
+            
+            # Clone repository
+            git clone https://github.com/${{ github.repository }}.git
+            
+            # Copy DAGs to Airflow
+            cp -r ~/Finals/data_pipeline/dags/* ~/airflow/dags/
+            
+            # Start frontend
+            cd ~/Finals/web_service/frontend
+            
+            # Stop existing frontend process if running
+            pm2 delete frontend 2>/dev/null || true
+            
+            # Install dependencies and start frontend
+            npm install
+            pm2 start npm --name "frontend" -- start -- --port 3001 --host 0.0.0.0
+            
+            # Start backend
+            cd ~/Finals/web_service/backend
+            
+            # Stop existing backend process if running
+            pm2 delete backend 2>/dev/null || true
+            
+            # Install dependencies and start backend
+            npm install
+            pm2 start npm --name "backend" -- start -- --port 5000 --host 0.0.0.0
+            
+            # Save PM2 configuration to restart on reboot
+            pm2 save
+            
+            echo "Deployment completed successfully!"
+          EOL

@@ -5,6 +5,7 @@ data_pipeline/mlruns
 data_pipeline/data
 data_pipeline/dags/__pycache__
 data_pipeline/dags/scoring_modules/__pycache__
+data_pipeline/dags/dev.txt
 /web_service/backend/node_modules/
 /web_service/frontend/node_modules/
 

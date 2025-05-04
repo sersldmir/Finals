@@ -5,7 +5,6 @@ import pyspark.sql.functions as F
 import random
 from datetime import date, timedelta, datetime
 
-ENV = 'dev'
 GENDERS = ['M', 'F', 'U']
 EMPLOYMENT_STATUSES = ['employed', 'unemployed', 'self-employed', 'student', 'retired', 'unknown']
 EDUCATION_LEVELS = ['none', 'primary', 'secondary', 'tertiary', 'postgraduate', 'unknown']
@@ -19,13 +18,6 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
 random.seed(datetime.now().timestamp())
-if ENV == 'dev':
-    os.environ['HADOOP_CONF_DIR'] = '/opt/homebrew/Cellar/hadoop/3.4.1/libexec/etc/hadoop'
-    os.environ['SPARK_LOCAL_IP'] = '127.0.0.1'
-    os.environ['JAVA_HOME'] = '/opt/homebrew/Cellar/openjdk@11/11.0.26/libexec/openjdk.jdk/Contents/Home'
-    os.environ['no_proxy']='*'
-else:
-    os.environ['SPARK_LOCAL_IP'] = '127.0.0.1'
 
 def random_date(start_date, end_date):
     days_between = (end_date - start_date).days
@@ -82,7 +74,18 @@ def generate_data(num_clients, num_transactions, num_loans):
     return clients, transactions, loans
 
 
-def main(for_ml=False, run_date=None):
+def main(for_ml=False, run_date=None, env='test'):
+
+    if env == 'dev':
+        os.environ['HADOOP_CONF_DIR'] = '/opt/homebrew/Cellar/hadoop/3.4.1/libexec/etc/hadoop'
+        os.environ['SPARK_LOCAL_IP'] = '127.0.0.1'
+        os.environ['JAVA_HOME'] = '/opt/homebrew/Cellar/openjdk@11/11.0.26/libexec/openjdk.jdk/Contents/Home'
+        os.environ['no_proxy']='*'
+    else:
+        os.environ['SPARK_LOCAL_IP'] = '0.0.0.0'
+        os.environ['JAVA_HOME'] = '/usr/lib/jvm/java-11-openjdk-amd64'
+        os.environ['HADOOP_CONF_DIR'] = '/home/sergmir/hadoop-3.4.1/etc/hadoop/'
+        os.environ['no_proxy']='*'
 
     if run_date is None:
         run_date = datetime.now().strftime("%Y-%m-%d")

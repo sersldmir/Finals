@@ -9,23 +9,22 @@ from psycopg2.extras import execute_values
 from datetime import datetime
 import os
 
-ENV = 'dev'
-
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
 
-if ENV == 'dev':
-    os.environ['HADOOP_CONF_DIR'] = '/opt/homebrew/Cellar/hadoop/3.4.1/libexec/etc/hadoop'
-    os.environ['SPARK_LOCAL_IP'] = '127.0.0.1'
-    os.environ['JAVA_HOME'] = '/opt/homebrew/Cellar/openjdk@11/11.0.26/libexec/openjdk.jdk/Contents/Home'
-    os.environ['no_proxy']='*'
-else:
-    os.environ['SPARK_LOCAL_IP'] = '127.0.0.1'
-    os.environ['JAVA_HOME'] = ...
-    os.environ['HADOOP_CONF_DIR'] = ...
+def main(for_ml=False, run_date=None, env='test'):
 
-def main(for_ml=False, run_date=None):
+    if env == 'dev':
+        os.environ['HADOOP_CONF_DIR'] = '/opt/homebrew/Cellar/hadoop/3.4.1/libexec/etc/hadoop'
+        os.environ['SPARK_LOCAL_IP'] = '127.0.0.1'
+        os.environ['JAVA_HOME'] = '/opt/homebrew/Cellar/openjdk@11/11.0.26/libexec/openjdk.jdk/Contents/Home'
+        os.environ['no_proxy']='*'
+    else:
+        os.environ['SPARK_LOCAL_IP'] = '0.0.0.0'
+        os.environ['JAVA_HOME'] = '/usr/lib/jvm/java-11-openjdk-amd64'
+        os.environ['HADOOP_CONF_DIR'] = '/home/sergmir/hadoop-3.4.1/etc/hadoop/'
+        os.environ['no_proxy']='*'
 
     if run_date is None:
         run_date = datetime.now().strftime("%Y-%m-%d")

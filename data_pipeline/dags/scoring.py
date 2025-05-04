@@ -5,13 +5,18 @@ import os
 
 os.environ['no_proxy']='*'
 
+if os.path.exists("./dev.txt"):
+    env = "dev"
+else:
+    env = "test"
+
 def generate_data(**kwargs):
 
     from scoring_modules import generate_data
 
     run_date = kwargs['logical_date'].strftime("%Y-%m-%d")
 
-    generate_data.main(run_date=run_date)
+    generate_data.main(run_date=run_date, env=env)
 
 def agg_data(**kwargs):
 
@@ -19,7 +24,7 @@ def agg_data(**kwargs):
 
     run_date = kwargs['logical_date'].strftime("%Y-%m-%d")
 
-    aggregate_data.main(run_date=run_date)
+    aggregate_data.main(run_date=run_date, env=env)
 
 def score_n_load(**kwargs):
 
@@ -27,7 +32,7 @@ def score_n_load(**kwargs):
 
     run_date = kwargs['logical_date'].strftime("%Y-%m-%d")
 
-    score_n_load_data.main(run_date=run_date)
+    score_n_load_data.main(run_date=run_date, env=env)
     
 
 

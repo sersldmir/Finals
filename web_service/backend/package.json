@@ -2,6 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "servier.js",
+  "type": "module",
   "description": "Backend for credit score service",
   "scripts": {
     "start": "node server.js",

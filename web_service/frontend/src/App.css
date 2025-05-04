@@ -1,0 +1,36 @@
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.masked-text {
+  font-family: monospace;
+}
+
+.stats-container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.user-card {
+  margin-bottom: 15px;
+}
+
+.main-buttons {
+  margin-top: 100px;
+}
+
+.main-button {
+  width: 200px;
+  margin: 10px;
+}
+
+.page-header {
+  margin-bottom: 30px;
+}
+
+.form-container {
+  max-width: 500px;
+  margin: 0 auto;
+}

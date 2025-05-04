@@ -28,7 +28,7 @@ jobs:
           SERVER_USER: ${{ secrets.SERVER_USER }}
         run: |
           # Connect to server and deploy
-          ssh -l ${{ secrets.SERVER_USER }} @${{ secrets.SERVER_IP }} << 'EOL'
+          ssh -l ${{ secrets.SERVER_USER }} ${{ secrets.SERVER_IP }} << 'EOL'
             # Remove old repository if exists
             if [ -d "~/Finals" ]; then
               rm -rf ~/Finals

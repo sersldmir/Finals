@@ -6,25 +6,20 @@ data_pipeline/data
 data_pipeline/dags/__pycache__
 data_pipeline/dags/scoring_modules/__pycache__
 data_pipeline/dags/dev.txt
-/web_service/backend/node_modules/
-/web_service/frontend/node_modules/
 
+/web_service/backend/node_modules/
+/web_service/backend/.env.local
+
+/web_service/frontend/node_modules/
 /web_service/frontend/.pnp
 /web_service/frontend/.pnp.js
-
-# testing
 /web_service/frontend/coverage
-
-# production
 /web_service/frontend/build
-
-# misc
 /web_service/frontend/.DS_Store
 /web_service/frontend/.env.local
 /web_service/frontend/.env.development.local
 /web_service/frontend/.env.test.local
 /web_service/frontend/.env.production.local
-
 /web_service/frontend/npm-debug.log*
 /web_service/frontend/yarn-debug.log*
 /web_service/frontend/yarn-error.log*

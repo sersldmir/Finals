@@ -48,7 +48,7 @@ jobs:
             
             # Install dependencies and start frontend
             npm install
-            pm2 start npm --name "frontend" -- start -- --port 3001 --host 0.0.0.0
+            pm2 start npm --name "frontend" -- start
             
             # Start backend
             cd ~/Finals/web_service/backend
@@ -58,7 +58,7 @@ jobs:
             
             # Install dependencies and start backend
             npm install
-            pm2 start npm --name "backend" -- start -- --port 5000 --host 0.0.0.0
+            pm2 start npm --name "backend" -- start
             
             # Save PM2 configuration to restart on reboot
             pm2 save

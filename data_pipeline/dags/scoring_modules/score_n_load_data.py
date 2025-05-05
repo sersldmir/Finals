@@ -20,11 +20,15 @@ def main(run_date=None, env='test'):
         os.environ['JAVA_HOME'] = '/opt/homebrew/Cellar/openjdk@11/11.0.26/libexec/openjdk.jdk/Contents/Home'
         os.environ['no_proxy']='*'
         bind_address = "127.0.0.1"
+        venv_pack_path_spark = "mlflow_venv_pack.tar.gz#mlflow_venv_pack"
+        venv_pack_path_node = "mlflow_venv_pack"
     else:
         os.environ['JAVA_HOME'] = '/usr/lib/jvm/java-11-openjdk-amd64'
         os.environ['HADOOP_CONF_DIR'] = '/home/sergmir/hadoop-3.4.1/etc/hadoop/'
         os.environ['no_proxy']='*'
         bind_address = "0.0.0.0"
+        venv_pack_path_spark = "/home/sergmir/mlflow_venv_pack.tar.gz#mlflow_venv_pack"
+        venv_pack_path_node = "mlflow_venv_pack"
 
     log.info(f"Env: {env}")
 
@@ -40,6 +44,8 @@ def main(run_date=None, env='test'):
         .config("spark.ui.bindAddress", bind_address)
         .config("spark.driver.bindAddress", bind_address)
         .config("spark.jars.packages", "org.postgresql:postgresql:42.2.18")
+        .config("spark.archives", venv_pack_path_spark) \
+        .config("spark.pyspark.python", f"{venv_pack_path_node}/bin/python") \
         .master("yarn")
         .getOrCreate()
     )

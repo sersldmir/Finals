@@ -5,15 +5,20 @@ import os
 
 os.environ['no_proxy']='*'
 
-with open("requirements.txt") as file:
-    reqs = file.readlines()
-
-reqs = [i.replace("\n", '') for i in reqs]
-
 if os.path.exists("./dev.txt"):
     env = "dev"
 else:
     env = "test"
+
+if env == "dev":
+    req_path = "requirements.txt"
+else:
+    req_path = "/home/sergmir/airflow/dags/requirements.txt"
+
+with open(req_path) as file:
+    reqs = file.readlines()
+
+reqs = [i.replace('\n', '') for i in reqs]
 
 def generate_data(**kwargs):
 

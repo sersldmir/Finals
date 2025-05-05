@@ -1,6 +1,0 @@
-pyspark
-pandas
-numpy
-mlflow
-lightgbm
-psycopg2-binary

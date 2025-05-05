@@ -15,11 +15,6 @@ if env == "dev":
 else:
     req_path = "/home/sergmir/py_venv/bin/python3"
 
-with open(req_path) as file:
-    reqs = file.readlines()
-
-reqs = [i.replace('\n', '') for i in reqs]
-
 
 def generate_data(**kwargs):
 

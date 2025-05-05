@@ -15,11 +15,6 @@ if env == "dev":
 else:
     req_path = "/home/sergmir/py_venv/bin/python3"
 
-with open(req_path) as file:
-    reqs = file.readlines()
-
-reqs = [i.replace('\n', '') for i in reqs]
-
 
 def generate_data(**kwargs):
 
@@ -63,7 +58,6 @@ with DAG(
     generate_data_task = ExternalPythonOperator(
         task_id='generate_data',
         python_callable=generate_data,
-        requirements=reqs,
         python=py_venv_path
     )
 

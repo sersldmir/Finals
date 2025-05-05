@@ -1,8 +1,7 @@
 from airflow import DAG
-from airflow.providers.standard.operators.python import ExternalPythonOperator
+from airflow.providers.standard.operators.python import PythonOperator
 from datetime import datetime
 import os
-
 
 os.environ['no_proxy']='*'
 
@@ -11,13 +10,7 @@ if os.path.exists("./dev.txt"):
 else:
     env = "test"
 
-if env == "dev":
-    py_venv_path = "~/python_venvs/diploma_venv/bin/python3"
-else:
-    py_venv_path = "/home/sergmir/py_venv/bin/python3"
-
-
-def generate_data_wrapper(**kwargs):
+def generate_data(**kwargs):
 
     from scoring_modules import generate_data
 
@@ -25,7 +18,7 @@ def generate_data_wrapper(**kwargs):
 
     generate_data.main(run_date=run_date, env=env)
 
-def agg_data_wrapper(**kwargs):
+def agg_data(**kwargs):
 
     from scoring_modules import aggregate_data
 
@@ -33,7 +26,7 @@ def agg_data_wrapper(**kwargs):
 
     aggregate_data.main(run_date=run_date, env=env)
 
-def score_n_load_wrapper(**kwargs):
+def score_n_load(**kwargs):
 
     from scoring_modules import score_n_load_data
 
@@ -51,22 +44,19 @@ with DAG(
     tags=['scoring']
 ) as dag:
     
-    generate_data_task = ExternalPythonOperator(
+    generate_data_task = PythonOperator(
         task_id='generate_data',
-        python_callable=generate_data_wrapper,
-        python=py_venv_path
+        python_callable=generate_data,
     )
 
-    agg_data_task = ExternalPythonOperator(
+    agg_data_task = PythonOperator(
         task_id='agg_data',
-        python_callable=agg_data_wrapper,
-        python=py_venv_path
+        python_callable=agg_data,
     )
 
-    score_n_load_task = ExternalPythonOperator(
+    score_n_load_task = PythonOperator(
         task_id='score_n_load',
-        python_callable=score_n_load_wrapper,
-        python=py_venv_path
+        python_callable=score_n_load,
     )
 
 generate_data_task >> agg_data_task >> score_n_load_task

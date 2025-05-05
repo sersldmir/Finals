@@ -5,7 +5,7 @@ import os
 
 os.environ['no_proxy']='*'
 
-with open("./requirements.txt") as file:
+with open("./dags/requirements.txt") as file:
     reqs = file.readlines()
 
 reqs = [i.replace('\n', '') for i in reqs]

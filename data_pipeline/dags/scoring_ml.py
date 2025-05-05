@@ -2,6 +2,7 @@ from airflow import DAG
 from airflow.providers.standard.operators.python import ExternalPythonOperator
 from datetime import datetime
 import os
+from scoring_modules import generate_data, aggregate_data, mark_data, teach_n_load_model
 
 os.environ['no_proxy']='*'
 
@@ -18,15 +19,11 @@ else:
 
 def generate_data(**kwargs):
 
-    from scoring_modules import generate_data
-
     run_date = kwargs['logical_date'].strftime("%Y-%m-%d")
 
     generate_data.main(run_date=run_date, for_ml=True, env=env)
 
 def agg_data(**kwargs):
-
-    from scoring_modules import aggregate_data
 
     run_date = kwargs['logical_date'].strftime("%Y-%m-%d")
 
@@ -34,13 +31,9 @@ def agg_data(**kwargs):
 
 def mark_data():
 
-    from scoring_modules import mark_data
-
     mark_data.main(env=env)
 
 def teach_n_load():
-
-    from scoring_modules import teach_n_load_model
 
     teach_n_load_model.main(env=env)
 

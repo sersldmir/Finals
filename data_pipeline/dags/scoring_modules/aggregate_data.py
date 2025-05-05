@@ -20,10 +20,12 @@ def main(for_ml=False, run_date=None, env='test'):
         os.environ['SPARK_LOCAL_IP'] = '127.0.0.1'
         os.environ['JAVA_HOME'] = '/opt/homebrew/Cellar/openjdk@11/11.0.26/libexec/openjdk.jdk/Contents/Home'
         os.environ['no_proxy']='*'
+        bind_address = "127.0.0.1"
     else:
         os.environ['JAVA_HOME'] = '/usr/lib/jvm/java-11-openjdk-amd64'
         os.environ['HADOOP_CONF_DIR'] = '/home/sergmir/hadoop-3.4.1/etc/hadoop/'
         os.environ['no_proxy']='*'
+        bind_address = "158.160.29.102"
 
     log.info(f"Env: {env}")
 
@@ -36,8 +38,8 @@ def main(for_ml=False, run_date=None, env='test'):
     spark = (SparkSession.builder 
         .appName("Aggregate scoring data")
         .config("spark.log.level", "WARN")
-        .config("spark.ui.bindAddress", "127.0.0.1")
-        .config("spark.driver.bindAddress", "127.0.0.1")
+        .config("spark.ui.bindAddress", bind_address)
+        .config("spark.driver.bindAddress", bind_address)
         .master("yarn")
         .getOrCreate()
     )
@@ -178,7 +180,7 @@ def main(for_ml=False, run_date=None, env='test'):
             connection = psycopg2.connect(
                 dbname='scoring',
                 user='postgres_dev',
-                host='localhost',
+                host=bind_address,
                 port='5432'
             )
 

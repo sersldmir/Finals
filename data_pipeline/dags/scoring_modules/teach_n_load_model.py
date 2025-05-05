@@ -20,10 +20,12 @@ def main(env='test'):
         os.environ['SPARK_LOCAL_IP'] = '127.0.0.1'
         os.environ['JAVA_HOME'] = '/opt/homebrew/Cellar/openjdk@11/11.0.26/libexec/openjdk.jdk/Contents/Home'
         os.environ['no_proxy']='*'
+        bind_address = "127.0.0.1"
     else:
         os.environ['JAVA_HOME'] = '/usr/lib/jvm/java-11-openjdk-amd64'
         os.environ['HADOOP_CONF_DIR'] = '/home/sergmir/hadoop-3.4.1/etc/hadoop/'
         os.environ['no_proxy']='*'
+        bind_address = "158.160.29.102"
     
     log.info(f"Env: {env}")
 
@@ -31,8 +33,8 @@ def main(env='test'):
     spark = (SparkSession.builder 
         .appName("Teach and load model")
         .config("spark.log.level", "WARN")
-        .config("spark.ui.bindAddress", "127.0.0.1")
-        .config("spark.driver.bindAddress", "127.0.0.1")
+        .config("spark.ui.bindAddress", bind_address)
+        .config("spark.driver.bindAddress", bind_address)
         .master("yarn")
         .getOrCreate()
     )
@@ -76,7 +78,7 @@ def main(env='test'):
     log.info(f'ROC AUC Score: {roc_auc}')
 
     log.info("Loading model to MLFlow")
-    mlflow.set_tracking_uri("http://127.0.0.1:8081")
+    mlflow.set_tracking_uri(f"http://{bind_address}:8081")
     mlflow.set_experiment("LightGBM Classifier MLFlow demo + Spark")
 
     with mlflow.start_run():

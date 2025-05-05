@@ -20,10 +20,11 @@ def main(run_date=None, env='test'):
         os.environ['JAVA_HOME'] = '/opt/homebrew/Cellar/openjdk@11/11.0.26/libexec/openjdk.jdk/Contents/Home'
         os.environ['no_proxy']='*'
     else:
-        os.environ['SPARK_LOCAL_IP'] = '0.0.0.0'
         os.environ['JAVA_HOME'] = '/usr/lib/jvm/java-11-openjdk-amd64'
         os.environ['HADOOP_CONF_DIR'] = '/home/sergmir/hadoop-3.4.1/etc/hadoop/'
         os.environ['no_proxy']='*'
+
+    log.info(f"Env: {env}")
 
     if run_date is None:
         run_date = datetime.now().strftime("%Y-%m-%d")

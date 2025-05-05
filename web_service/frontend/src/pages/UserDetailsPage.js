@@ -34,14 +34,26 @@ function UserDetailsPage() {
   }, [id]);
 
   const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text)
-      .then(() => {
-        alert('Скопировано!');
-      })
-      .catch(err => {
-        console.error('Failed to copy: ', err);
-      });
-  };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text)
+        .then(() => alert('Copied!'))
+        .catch(() => alert('Copy failed'));
+    } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          alert('Copied!');
+        } catch (err) {
+          alert('Copy failed');
+        }
+        document.body.removeChild(textarea);
+    }
+  }
 
   if (loading) return <div className="app-container text-center mt-5"><div className="spinner-border" role="status"></div></div>;
   if (error) return <div className="app-container"><div className="alert alert-danger">{error}</div></div>;

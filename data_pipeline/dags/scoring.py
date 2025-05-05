@@ -1,8 +1,7 @@
 from airflow import DAG
-from airflow.providers.standard.operators.python import PythonVirtualenvOperator
+from airflow.providers.standard.operators.python import ExternalPythonOperator
 from datetime import datetime
 import os
-import sys
 
 os.environ['no_proxy']='*'
 
@@ -12,22 +11,17 @@ else:
     env = "test"
 
 if env == "dev":
-    req_path = "requirements.txt"
+    py_venv_path = "~/python_venvs/diploma_venv/bin/python3"
 else:
-    req_path = "/home/sergmir/airflow/dags/requirements.txt"
+    req_path = "/home/sergmir/py_venv/bin/python3"
 
 with open(req_path) as file:
     reqs = file.readlines()
 
 reqs = [i.replace('\n', '') for i in reqs]
 
-def add_folder_sys():
-    dags_folder = os.path.dirname(os.path.abspath(__file__))
-    sys.path.append(dags_folder)
 
 def generate_data(**kwargs):
-
-    add_folder_sys()
 
     from scoring_modules import generate_data
 
@@ -37,8 +31,6 @@ def generate_data(**kwargs):
 
 def agg_data(**kwargs):
 
-    add_folder_sys()
-
     from scoring_modules import aggregate_data
 
     run_date = kwargs['logical_date'].strftime("%Y-%m-%d")
@@ -46,8 +38,6 @@ def agg_data(**kwargs):
     aggregate_data.main(run_date=run_date, env=env)
 
 def score_n_load(**kwargs):
-
-    add_folder_sys()
 
     from scoring_modules import score_n_load_data
 
@@ -65,25 +55,22 @@ with DAG(
     tags=['scoring']
 ) as dag:
     
-    generate_data_task = PythonVirtualenvOperator(
+    generate_data_task = ExternalPythonOperator(
         task_id='generate_data',
         python_callable=generate_data,
-        requirements=reqs,
-        system_site_packages=True,
+        python=py_venv_path
     )
 
-    agg_data_task = PythonVirtualenvOperator(
+    agg_data_task = ExternalPythonOperator(
         task_id='agg_data',
         python_callable=agg_data,
-        requirements=reqs,
-        system_site_packages=True,
+        python=py_venv_path
     )
 
-    score_n_load_task = PythonVirtualenvOperator(
+    score_n_load_task = ExternalPythonOperator(
         task_id='score_n_load',
         python_callable=score_n_load,
-        requirements=reqs,
-        system_site_packages=True,
+        python=py_venv_path
     )
 
 generate_data_task >> agg_data_task >> score_n_load_task

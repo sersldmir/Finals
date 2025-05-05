@@ -135,6 +135,12 @@ def main(run_date=None, env='test'):
         .jdbc(url=db_url, table="scores_service", mode="overwrite", properties=db_properties)
     )
 
+    log.info("Finished")
+    log.info("5 rows for example")
+    log.info(predicted_scores.show(5, truncate=False))
+
+    spark.stop()
+
 
 
 if __name__ == "__main__":

@@ -1,9 +1,14 @@
 from airflow import DAG
-from airflow.providers.standard.operators.python import PythonOperator
+from airflow.providers.standard.operators.python import PythonVirtualenvOperator
 from datetime import datetime
 import os
 
 os.environ['no_proxy']='*'
+
+with open("./requirements.txt") as file:
+    reqs = file.readlines()
+
+reqs = [i.replace("\n") for i in reqs]
 
 if os.path.exists("./dev.txt"):
     env = "dev"
@@ -49,24 +54,32 @@ with DAG(
 ) as dag:
     
 
-    generate_data_task = PythonOperator(
+    generate_data_task = PythonVirtualenvOperator(
         task_id='generate_data',
         python_callable=generate_data,
+        requirements=reqs,
+        system_site_packages=False,
     )
 
-    agg_data_task = PythonOperator(
+    agg_data_task = PythonVirtualenvOperator(
         task_id='agg_data',
         python_callable=agg_data,
+        requirements=reqs,
+        system_site_packages=False,
     )
 
-    mark_data_task = PythonOperator(
+    mark_data_task = PythonVirtualenvOperator(
         task_id='mark_data',
         python_callable=mark_data,
+        requirements=reqs,
+        system_site_packages=False,
     )
 
-    teach_n_load_task = PythonOperator(
+    teach_n_load_task = PythonVirtualenvOperator(
         task_id='teach_n_load_model',
         python_callable=teach_n_load,
+        requirements=reqs,
+        system_site_packages=False,
     )
 
 generate_data_task >> agg_data_task >> mark_data_task >> teach_n_load_task

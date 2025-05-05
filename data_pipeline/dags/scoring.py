@@ -1,5 +1,5 @@
 from airflow import DAG
-from airflow.providers.standard.operators.python import PythonOperator
+from airflow.providers.standard.operators.python import PythonVirtualenvOperator
 from datetime import datetime
 import os
 
@@ -44,17 +44,17 @@ with DAG(
     tags=['scoring']
 ) as dag:
     
-    generate_data_task = PythonOperator(
+    generate_data_task = PythonVirtualenvOperator(
         task_id='generate_data',
         python_callable=generate_data,
     )
 
-    agg_data_task = PythonOperator(
+    agg_data_task = PythonVirtualenvOperator(
         task_id='agg_data',
         python_callable=agg_data,
     )
 
-    score_n_load_task = PythonOperator(
+    score_n_load_task = PythonVirtualenvOperator(
         task_id='score_n_load',
         python_callable=score_n_load,
     )

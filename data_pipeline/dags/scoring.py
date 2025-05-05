@@ -5,6 +5,11 @@ import os
 
 os.environ['no_proxy']='*'
 
+with open("./requirements.txt") as file:
+    reqs = file.readlines()
+
+reqs = [i.replace("\n") for i in reqs]
+
 if os.path.exists("./dev.txt"):
     env = "dev"
 else:
@@ -47,16 +52,22 @@ with DAG(
     generate_data_task = PythonVirtualenvOperator(
         task_id='generate_data',
         python_callable=generate_data,
+        requirements=reqs,
+        system_site_packages=False,
     )
 
     agg_data_task = PythonVirtualenvOperator(
         task_id='agg_data',
         python_callable=agg_data,
+        requirements=reqs,
+        system_site_packages=False,
     )
 
     score_n_load_task = PythonVirtualenvOperator(
         task_id='score_n_load',
         python_callable=score_n_load,
+        requirements=reqs,
+        system_site_packages=False,
     )
 
 generate_data_task >> agg_data_task >> score_n_load_task

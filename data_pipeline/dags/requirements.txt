@@ -3,4 +3,4 @@ pandas
 numpy
 mlflow
 lightgbm
-psycopg2
+psycopg2-binary

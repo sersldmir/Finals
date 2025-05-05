@@ -95,6 +95,7 @@ def main(run_date=None, env='test'):
         connection = psycopg2.connect(
             dbname='scoring',
             user='postgres_dev',
+            password='1',
             host=bind_address,
             port='5432'
         )

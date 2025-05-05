@@ -30,7 +30,7 @@ jobs:
           # Connect to server and deploy
           ssh -l ${{ secrets.SERVER_USER }} ${{ secrets.SERVER_IP }} << 'EOL'
             # Remove old repository if exists
-            if [ -d "~/Finals" ]; then
+            if [ -d ~/Finals ]; then
               rm -rf ~/Finals
             fi
             
@@ -38,6 +38,7 @@ jobs:
             git clone https://github.com/${{ github.repository }}.git
             
             # Copy DAGs to Airflow
+            rm -r ~/airflow/dags/
             cp -r ~/Finals/data_pipeline/dags ~/airflow/dags
 
             # Start frontend

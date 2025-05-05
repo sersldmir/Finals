@@ -13,7 +13,7 @@ else:
 if env == "dev":
     py_venv_path = "~/python_venvs/diploma_venv/bin/python3"
 else:
-    req_path = "/home/sergmir/py_venv/bin/python3"
+    py_venv_path = "/home/sergmir/py_venv/bin/python3"
 
 
 def generate_data(**kwargs):

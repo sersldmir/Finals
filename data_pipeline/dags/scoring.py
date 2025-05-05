@@ -16,7 +16,7 @@ else:
     py_venv_path = "/home/sergmir/py_venv/bin/python3"
 
 
-def generate_data(**kwargs):
+def generate_data_wrapper(**kwargs):
 
     from scoring_modules import generate_data
 
@@ -24,7 +24,7 @@ def generate_data(**kwargs):
 
     generate_data.main(run_date=run_date, env=env)
 
-def agg_data(**kwargs):
+def agg_data_wrapper(**kwargs):
 
     from scoring_modules import aggregate_data
 
@@ -32,7 +32,7 @@ def agg_data(**kwargs):
 
     aggregate_data.main(run_date=run_date, env=env)
 
-def score_n_load(**kwargs):
+def score_n_load_wrapper(**kwargs):
 
     from scoring_modules import score_n_load_data
 
@@ -52,19 +52,19 @@ with DAG(
     
     generate_data_task = ExternalPythonOperator(
         task_id='generate_data',
-        python_callable=generate_data,
+        python_callable=generate_data_wrapper,
         python=py_venv_path
     )
 
     agg_data_task = ExternalPythonOperator(
         task_id='agg_data',
-        python_callable=agg_data,
+        python_callable=agg_data_wrapper,
         python=py_venv_path
     )
 
     score_n_load_task = ExternalPythonOperator(
         task_id='score_n_load',
-        python_callable=score_n_load,
+        python_callable=score_n_load_wrapper,
         python=py_venv_path
     )
 

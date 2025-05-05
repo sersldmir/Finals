@@ -16,7 +16,7 @@ else:
     py_venv_path = "/home/sergmir/py_venv/bin/python3"
 
 
-def generate_data(**kwargs):
+def generate_data_wrapper(**kwargs):
 
     from scoring_modules import generate_data
 
@@ -24,7 +24,7 @@ def generate_data(**kwargs):
 
     generate_data.main(run_date=run_date, for_ml=True, env=env)
 
-def agg_data(**kwargs):
+def agg_data_wrapper(**kwargs):
 
     from scoring_modules import aggregate_data
 
@@ -32,13 +32,13 @@ def agg_data(**kwargs):
 
     aggregate_data.main(run_date=run_date, for_ml=True, env=env)
 
-def mark_data():
+def mark_data_wrapper():
 
     from scoring_modules import mark_data
 
     mark_data.main(env=env)
 
-def teach_n_load():
+def teach_n_load_wrapper():
 
     from scoring_modules import teach_n_load_model
 
@@ -57,25 +57,25 @@ with DAG(
 
     generate_data_task = ExternalPythonOperator(
         task_id='generate_data',
-        python_callable=generate_data,
+        python_callable=generate_data_wrapper,
         python=py_venv_path
     )
 
     agg_data_task = ExternalPythonOperator(
         task_id='agg_data',
-        python_callable=agg_data,
+        python_callable=agg_data_wrapper,
         python=py_venv_path
     )
 
     mark_data_task = ExternalPythonOperator(
         task_id='mark_data',
-        python_callable=mark_data,
+        python_callable=mark_data_wrapper,
         python=py_venv_path
     )
 
     teach_n_load_task = ExternalPythonOperator(
         task_id='teach_n_load_model',
-        python_callable=teach_n_load,
+        python_callable=teach_n_load_wrapper,
         python=py_venv_path
     )
 

@@ -38,7 +38,7 @@ jobs:
             git clone https://github.com/${{ github.repository }}.git
             
             # Copy DAGs to Airflow
-            cp -r ~/Finals/data_pipeline/dags/* ~/airflow/dags/
+            cp -r ~/Finals/data_pipeline/dags ~/airflow/dags
 
             # Start frontend
             cd ~/Finals/web_service/frontend

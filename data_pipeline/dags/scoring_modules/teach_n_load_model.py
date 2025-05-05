@@ -31,7 +31,7 @@ def main(env='test'):
 
     log.info("Starting spark app")
     spark = (SparkSession.builder 
-        .appName("Teach and load model")
+        .appName("Score data and load to service")
         .config("spark.log.level", "WARN")
         .config("spark.ui.bindAddress", bind_address)
         .config("spark.driver.bindAddress", bind_address)

@@ -8,7 +8,7 @@ os.environ['no_proxy']='*'
 with open("./requirements.txt") as file:
     reqs = file.readlines()
 
-reqs = [i.replace("\n") for i in reqs]
+reqs = [i.replace("\n", '') for i in reqs]
 
 if os.path.exists("./dev.txt"):
     env = "dev"

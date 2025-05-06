@@ -6,7 +6,6 @@ import pyspark.sql.functions as F
 import mlflow
 import psycopg2
 from psycopg2.extras import execute_values
-from pyspark.sql.types import DecimalType
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
@@ -20,15 +19,11 @@ def main(run_date=None, env='test'):
         os.environ['JAVA_HOME'] = '/opt/homebrew/Cellar/openjdk@11/11.0.26/libexec/openjdk.jdk/Contents/Home'
         os.environ['no_proxy']='*'
         bind_address = "127.0.0.1"
-        venv_pack_path_spark = "mlflow_venv_pack.tar.gz#mlflow_venv_pack"
-        venv_pack_path_node = "mlflow_venv_pack"
     else:
         os.environ['JAVA_HOME'] = '/usr/lib/jvm/java-11-openjdk-amd64'
         os.environ['HADOOP_CONF_DIR'] = '/home/sergmir/hadoop-3.4.1/etc/hadoop/'
         os.environ['no_proxy']='*'
         bind_address = "0.0.0.0"
-        venv_pack_path_spark = "/home/sergmir/mlflow_venv_pack.tar.gz#mlflow_venv_pack"
-        venv_pack_path_node = "mlflow_venv_pack"
 
     log.info(f"Env: {env}")
 
@@ -39,13 +34,11 @@ def main(run_date=None, env='test'):
 
     log.info("Starting spark app")
     spark = (SparkSession.builder 
-        .appName("Teach and load model")
+        .appName("Score and load clients")
         .config("spark.log.level", "WARN")
         .config("spark.ui.bindAddress", bind_address)
         .config("spark.driver.bindAddress", bind_address)
         .config("spark.jars.packages", "org.postgresql:postgresql:42.2.18")
-        .config("spark.archives", venv_pack_path_spark) \
-        .config("spark.pyspark.python", f"{venv_pack_path_node}/bin/python") \
         .master("yarn")
         .getOrCreate()
     )
@@ -57,7 +50,7 @@ def main(run_date=None, env='test'):
     model_name = "lightgbm_classifier_spark_demo"
     version = "latest"
     model_uri = f"models:/{model_name}/{version}"
-    model_udf = mlflow.pyfunc.spark_udf(spark, model_uri=model_uri)
+    model = mlflow.pyfunc.load_model(model_uri)
 
     features = ['age', 'gender_encoded', 'employment_status_encoded',
         'education_level_encoded', 'marital_status_encoded',
@@ -67,11 +60,20 @@ def main(run_date=None, env='test'):
         'total_loan_amount', 'avg_loan_amount', 'loan_count',
         'avg_interest_rate', 'remaining_balance_ratio']
 
+    # to be paralleled
+
     log.info("Scoring...")
-    features_df = spark.read.orc("model_features").where(F.col("business_dt") == run_date)
-    predicted_scores = features_df.withColumn("target", 
-        model_udf(*features).getItem(0).cast(DecimalType(precision=15, scale=10))
+    raw_pd_df = (
+        spark.read.orc("model_features")
+        .where(F.col("business_dt") == run_date)
+        .toPandas()
     )
+
+    features_df = raw_pd_df[features]
+
+    raw_pd_df['target'] = model.predict(features_df)
+
+    predicted_scores = spark.createDataFrame(raw_pd_df)
 
     log.info("Saving scores to hdfs")
     (

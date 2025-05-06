@@ -142,18 +142,24 @@ def main(for_ml=False, run_date=None, env='test'):
     )
 
     log.info("Filling nulls")
+    
     cols_to_fill = [
         col_name for col_name in model_features.columns
         if col_name != 'client_id' and not col_name.endswith('_encoded')
     ]
 
+    means = model_features.select([F.mean(col).alias(col) for col in cols_to_fill]).collect()[0]
+
+    mean_values = {col: means[i] for i, col in enumerate(cols_to_fill)}
+
+    valid_means = {col: (val if val is not None else 0) for col, val in mean_values.items()}
+
+    if valid_means:
+        model_features = model_features.fillna(valid_means)
+
     for col_name in cols_to_fill:
-        try:
-            median = model_features.approxQuantile(col_name, [0.5], 0.01)[0]
-            if median is not None:
-                model_features = model_features.fillna({col_name: median})
-        except Exception as e:
-            print(f"Could not impute column '{col_name}': {str(e)}")
+        if col_name not in valid_means:
+            print(f"Could not impute column '{col_name}': Mean value is None")
 
     log.info("Saving feats")
     (

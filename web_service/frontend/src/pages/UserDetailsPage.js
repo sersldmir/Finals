@@ -61,7 +61,7 @@ function UserDetailsPage() {
 
   return (
     <div className="app-container">
-      <Header title="User Details" showBackButton={true} backPath="/admin" />
+      <Header title="Подробнее о пользователе" showBackButton={true} backPath="/admin" />
 
       <div className="card mb-4">
         <div className="card-body">
